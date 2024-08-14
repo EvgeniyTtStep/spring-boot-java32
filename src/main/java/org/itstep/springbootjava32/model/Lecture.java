@@ -40,6 +40,10 @@ public class Lecture {
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     private Teacher teacher;
+
+    @ManyToOne
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
     
     @ManyToMany
     @JoinTable(
@@ -47,6 +51,7 @@ public class Lecture {
         joinColumns = @JoinColumn(name = "lecture_id"),
         inverseJoinColumns = @JoinColumn(name = "group_id")
     )
+
     private Set<Group> groups;
 }
 
