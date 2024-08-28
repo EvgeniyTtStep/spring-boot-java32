@@ -1,7 +1,6 @@
 package org.itstep.springbootjava32.model;
 
 import jakarta.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,22 +9,26 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-
+@Component
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "teachers")
-public class Teacher {
+@AllArgsConstructor
+@Entity
+@Table(name = "curators")
+public class Curator {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_teacher")
     private Integer id;
-    private String name;
+    private String Name;
+    private String Surname;
 
-//    @ManyToMany(mappedBy = "teachers", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    private Set<Student> students;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "groupscurators",
+            joinColumns = @JoinColumn(name = "Curator_Id"),
+            inverseJoinColumns = @JoinColumn(name = "Group_Id"))
+    private Set<Group> groups;
 
 
 }
