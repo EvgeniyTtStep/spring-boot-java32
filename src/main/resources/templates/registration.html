@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
 </head>
 <body>
 
@@ -17,6 +19,9 @@
 
     <div class="fielderr" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
     Password:<input type="text" name="password" th:field="*{password}"> <br>
+
+    <div class="g-recaptcha" data-sitekey="6LdM1S0qAAAAAEMOSOAcBXFMGzZgXF2Q_AICp87h"></div>
+
 
     <button type="submit">Register</button>
 </form>

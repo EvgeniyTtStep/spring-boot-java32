@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -38,58 +39,60 @@ public class WebSecurityConfiguration {
 
     private MyAuthProvider myAuthProvider;
 
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-    @Autowired
-    public WebSecurityConfiguration(UserDetailServiceImpl userDetailService, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+    public WebSecurityConfiguration(UserDetailServiceImpl userDetailService) {
         this.userDetailService = userDetailService;
-        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
+    // private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+//    @Autowired
+//    public WebSecurityConfiguration(UserDetailServiceImpl userDetailService, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+//        this.userDetailService = userDetailService;
+//        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+//    }
 
 
-        @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
-                        httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .sessionManagement(httpSecuritySessionManagementConfigurer ->
-                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/all-students", "/","/index", "/registration", "/image/{idStudent}").permitAll()
-                        .requestMatchers("/student/registerToken").permitAll()
-                        .requestMatchers("/v2/**").authenticated()
-                        .requestMatchers(HttpMethod.POST,"/signin", "/signup").permitAll()
-                        .anyRequest().authenticated()
-                ).addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
-
-
-
-    // === html template security ===
-//    @Bean
+//        @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        http
-////                .csrf((csrf)->csrf.ignoringRequestMatchers("/no-csrf")
+//                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+//                        httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+//                .sessionManagement(httpSecuritySessionManagementConfigurer ->
+//                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .csrf(AbstractHttpConfigurer::disable)
+//                .cors(Customizer.withDefaults())
 //                .authorizeHttpRequests((requests) -> requests
 //                        .requestMatchers("/all-students", "/","/index", "/registration", "/image/{idStudent}").permitAll()
 //                        .requestMatchers("/student/registerToken").permitAll()
-//                        .requestMatchers("/v2/**").permitAll()
-//                        .requestMatchers(HttpMethod.POST,"/signin").permitAll()
+//                        .requestMatchers("/v2/**").authenticated()
+//                        .requestMatchers(HttpMethod.POST,"/signin", "/signup").permitAll()
 //                        .anyRequest().authenticated()
-//                )
-//                .formLogin((form) -> form
-//                        .loginPage("/login")
-//                        .permitAll()
-//                )
-//                .logout((logout) -> logout.permitAll());
-//
+//                ).addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 //        return http.build();
 //    }
+
+
+    // === html template security ===
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+//                .csrf((csrf)->csrf.ignoringRequestMatchers("/no-csrf")
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/all-students", "/", "/index", "/registration", "/image/{idStudent}").permitAll()
+                        .requestMatchers("/student/registerToken").permitAll()
+                        .requestMatchers("/static/**", "/css/**", "/vendor/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin((form) -> form
+                        .loginPage("/login")
+                        .permitAll()
+                )
+                .logout((logout) -> logout.permitAll());
+                //.oauth2Login(Customizer.withDefaults());
+
+        return http.build();
+    }
 
 
 //    @Bean
@@ -115,10 +118,10 @@ public class WebSecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(){
-        return new JwtAuthenticationFilter();
-    }
+//    @Bean
+//    public JwtAuthenticationFilter jwtAuthenticationFilter(){
+//        return new JwtAuthenticationFilter();
+//    }
 
 //    @Bean
 //    public UserDetailsService userDetailsService() {
